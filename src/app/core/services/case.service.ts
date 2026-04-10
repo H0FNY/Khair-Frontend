@@ -21,8 +21,8 @@ import {
   providedIn: 'root'
 })
 export class CaseService {
-  private apiUrl = 'https://localhost:7000/api/CaseEntity';
-  private aidApiUrl = 'https://localhost:7000/api/Aid';
+  private apiUrl = 'https://khair.runasp.net/api/CaseEntity';
+  private aidApiUrl = 'https://khair.runasp.net/api/Aid';
   
   // Basic Cache for the first page
   private firstPageCache: CaseResponse | null = null;

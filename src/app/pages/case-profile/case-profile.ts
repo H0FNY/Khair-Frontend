@@ -467,7 +467,7 @@ export class CaseProfile implements OnInit {
   getFullImageUrl(url: string | undefined | null): string {
     if (!url) return 'assets/default-avatar.png';
     if (url.startsWith('http')) return url;
-    return url.startsWith('/') ? `https://localhost:7000${url}` : `https://localhost:7000/${url}`;
+    return url.startsWith('/') ? `https://khair.runasp.net${url}` : `https://khair.runasp.net/${url}`;
   }
 
   async deleteCase(): Promise<void> {

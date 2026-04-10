@@ -7,7 +7,7 @@ import { UserProfileDTO, UserUpdateDTO, PasswordChangeDTO } from '../models/user
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://localhost:7000/api/User';
+  private apiUrl = 'https://khair.runasp.net/api/User';
 
   constructor(private http: HttpClient) { }
 

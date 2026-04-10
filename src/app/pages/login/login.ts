@@ -27,7 +27,7 @@ export class Login {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    const apiUrl = `https://localhost:7000/api/User/Login?Username=${encodeURIComponent(this.username)}&Password=${encodeURIComponent(this.password)}`;
+    const apiUrl = `https://khair.runasp.net/api/User/Login?Username=${encodeURIComponent(this.username)}&Password=${encodeURIComponent(this.password)}`;
 
     this.http.get<any>(apiUrl).subscribe({
       next: (userId) => {
