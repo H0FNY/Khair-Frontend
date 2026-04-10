@@ -1,0 +1,671 @@
+<div class="dashboard-layout" [class.sidebar-collapsed]="sidebarService.isCollapsed()">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    <app-navbar></app-navbar>
+
+    <div class="content-area">
+      @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>جاري تحميل ملف المستفيد...</p>
+      </div>
+      } @else if (error()) {
+      <div class="error-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <p>{{ error() }}</p>
+        <a routerLink="/beneficiaries" class="back-btn">العودة للمستفيدين</a>
+      </div>
+      } @else if (caseProfile()) {
+      <div class="profile-container">
+        <!-- Top Header Card -->
+        <div class="profile-header-card">
+          <div class="profile-main-info">
+            <div class="profile-avatar">
+              {{ caseProfile()?.id }}
+            </div>
+            <div class="profile-title">
+              <h1>{{ caseProfile()?.name }}</h1>
+              <div class="meta-tags">
+
+                <span class="badge category-badge-alt">{{ caseProfile()?.category }}</span>
+                <span class="badge status-badge-alt">{{ caseProfile()?.status }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="header-actions">
+            <label class="upload-btn">
+              <input type="file" (change)="handleFileUpload($event)" multiple accept="image/*" hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              رفع صور
+            </label>
+            <button class="edit-profile-btn" (click)="openModal('profile', caseProfile())">
+              تعديل البيانات
+            </button>
+            <button class="delete-case-btn" (click)="deleteCase()" [disabled]="isSubmitting()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+              حذف المستفيد
+            </button>
+          </div>
+        </div>
+
+        <!-- Section Grid -->
+        <div class="profile-grid">
+
+          <!-- Basic Info -->
+          <div class="profile-section basic-info">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <h3>المعلومات الأساسية</h3>
+              </div>
+            </div>
+            <div class="info-list">
+              <div class="info-item">
+                <span class="label">الرقم القومي:</span>
+                <span class="value">{{ caseProfile()?.ssnid }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">العنوان:</span>
+                <span class="value">{{ caseProfile()?.address }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">التعليم:</span>
+                <span class="value">{{ caseProfile()?.education || 'غير مسجل' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">العمل:</span>
+                <span class="value">{{ caseProfile()?.work || 'غير مسجل' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">تاريخ التسجيل:</span>
+                <span class="value">{{ caseProfile()?.createdAt | date:'longDate' }}</span>
+              </div>
+
+              @if (caseProfile()?.notes) {
+              <div class="info-item full-width-info" style="grid-column: 1 / -1; margin-top: 8px;">
+                <span class="label">ملاحظات:</span>
+                <span class="value" style="display: block; margin-top: 4px; line-height: 1.6;">{{ caseProfile()?.notes
+                  }}</span>
+              </div>
+              }
+              <!-- Phones extracted to a separate card -->
+              @if (caseProfile()?.need) {
+              <div class="info-item full-width-info"
+                style="grid-column: 1 / -1; margin-top: 8px; background: #fffbeb; padding: 12px; border-radius: 10px; border: 1px solid #fde68a;">
+                <span class="label" style="color: #d97706; display: flex; align-items: center; gap: 6px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                  </svg>
+                  الاحتياج الأساسي:
+                </span>
+                <span class="value" style="color: #b45309; font-weight: 700; display: block; margin-top: 4px;">{{
+                  caseProfile()?.need }}</span>
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- Financials -->
+          <div class="profile-section financial-summary">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                  <line x1="12" y1="8" x2="12" y2="16"></line>
+                  <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+                <h3>الوضع المالي</h3>
+              </div>
+              <div class="header-actions-mini ">
+                <button class="add-mini-btn income" (click)="openModal('income')" title="إضافة دخل">+</button>
+                <button class="add-mini-btn spend" (click)="openModal('spend')" title="إضافة مصاريف">-</button>
+              </div>
+            </div>
+            <div class="financial-cards">
+              <div class="f-card income">
+                <span class="f-label">إجمالي الدخل</span>
+                <span class="f-value">{{ getTotalIncome() }} جنية</span>
+              </div>
+              <div class="f-card spends">
+                <span class="f-label">إجمالي المصاريف</span>
+                <span class="f-value">{{ getTotalSpends() }} جنية</span>
+              </div>
+              <div class="f-card balance" [class.negative]="getFinancialBalance() < 0">
+                <span class="f-label">الصافي</span>
+                <span class="f-value">{{ getFinancialBalance() }} جنية</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- House Details -->
+          <div class="profile-section house-section">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <h3>بيانات السكن</h3>
+              </div>
+              <div class="header-actions-mini">
+                <button class="add-mini-btn" (click)="openModal('house', caseProfile()?.houses)">تعديل</button>
+                @if (caseProfile()?.houses) {
+                <button class="add-mini-btn delete" (click)="deleteHouse()" title="حذف">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+                }
+              </div>
+            </div>
+            <div class="house-info">
+              @if (caseProfile()?.houses) {
+              <div class="info-item">
+                <span class="label">نوع السكن:</span>
+                <span class="value">{{ caseProfile()?.houses?.isRented ? 'إيجار' : 'تملك' }}</span>
+              </div>
+              @if (caseProfile()?.houses?.isRented) {
+              <div class="info-item">
+                <span class="label">مبلغ الإيجار:</span>
+                <span class="value">{{ caseProfile()?.houses?.rentAmount }} جنية</span>
+              </div>
+              }
+              <div class="info-item note-item">
+                <span class="label">ملاحظات:</span>
+                <p class="value">{{ caseProfile()?.houses?.notes || 'لا يوجد' }}</p>
+              </div>
+              } @else {
+              <p class="empty-msg">لم يتم تسجيل بيانات السكن.</p>
+              }
+            </div>
+          </div>
+
+          <!-- Phone Numbers Sub Section -->
+          <div class="profile-section phone-section">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <h3>أرقام الهاتف</h3>
+              </div>
+              <button class="add-mini-btn" (click)="openModal('phone')">إضافة رقم +</button>
+            </div>
+            <div class="phone-list-container">
+              <div class="tag-group" style="padding-top: 8px;">
+                  @for (p of caseProfile()?.phones; track p.id) {
+                  <div class="phone-item-tag">
+                    <span class="phone-tag">{{ p.phoneNumber }}</span>
+                    <div class="phone-actions">
+                      <button class="phone-action-btn edit" (click)="openModal('phone', p)" title="تعديل">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </button>
+                      <button class="phone-action-btn delete" (click)="deletePhone(p.id)" title="حذف">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  }
+                  @if (caseProfile()?.phones?.length === 0) {
+                  <p class="empty-msg" style="padding: 10px 0; margin: 0; text-align: right;">لم يتم تسجيل أرقام هاتف.</p>
+                  }
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Details (Income & Spends) -->
+          <div class="profile-section income-details full-width">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <h3>تفاصيل الدخل والمصاريف</h3>
+              </div>
+            </div>
+            <div class="financial-tables-container">
+              <div class="f-table-half">
+                <h4 class="sub-title income-text">مصادر الدخل</h4>
+                <table class="mini-data-table">
+                  <thead>
+                    <tr>
+                      <th>القيمة</th>
+                      <th>المصدر / ملاحظات</th>
+                      <th class="actions-col">إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (inc of caseProfile()?.incomes; track inc.id) {
+                    <tr>
+                      <td class="income-text">+ {{ inc.value }} جنية</td>
+                      <td>{{ inc.notes || '---' }}</td>
+                      <td class="actions-cell">
+                        <button class="action-icon-btn edit" (click)="openModal('income', inc)" title="تعديل">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </button>
+                        <button class="action-icon-btn delete" (click)="deleteIncome(inc.id)" title="حذف">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                    }
+                    @if (caseProfile()?.incomes?.length === 0) {
+                    <tr>
+                      <td colspan="3" class="empty-msg">لا يوجد سجلات دخل.</td>
+                    </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <div class="f-table-half">
+                <h4 class="sub-title spend-text">سجل المصاريف</h4>
+                <table class="mini-data-table">
+                  <thead>
+                    <tr>
+                      <th>القيمة</th>
+                      <th>المناسبة / ملاحظات</th>
+                      <th class="actions-col">إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (spd of caseProfile()?.spends; track spd.id) {
+                    <tr>
+                      <td class="spend-text">- {{ spd.value }} جنية</td>
+                      <td>{{ spd.notes || '---' }}</td>
+                      <td class="actions-cell">
+                        <button class="action-icon-btn edit" (click)="openModal('spend', spd)" title="تعديل">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </button>
+                        <button class="action-icon-btn delete" (click)="deleteSpend(spd.id)" title="حذف">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                    }
+                    @if (caseProfile()?.spends?.length === 0) {
+                    <tr>
+                      <td colspan="3" class="empty-msg">لا يوجد سجلات مصاريف.</td>
+                    </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Family Members -->
+          <div class="profile-section family-section full-width">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+                <h3>أفراد الأسرة ({{ caseProfile()?.families?.length }})</h3>
+              </div>
+              <button class="add-mini-btn" (click)="openModal('family')">إضافة فرد +</button>
+            </div>
+            <div class="family-list-container">
+              @if (caseProfile()?.families?.length) {
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>الاسم</th>
+                    <th>الصلة</th>
+                    <th>الرقم القومي</th>
+                    <th>التعليم</th>
+                    <th>العمل</th>
+                    <th>الحالة</th>
+                    <th class="actions-col">إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (member of caseProfile()?.families; track member.id) {
+                  <tr>
+                    <td>{{ member.name }}</td>
+                    <td><span class="relation-badge">{{ member.relation }}</span></td>
+                    <td>{{ member.ssnid }}</td>
+                    <td>{{ member.education }}</td>
+                    <td>{{ member.work }}</td>
+                    <td>{{ member.status }}</td>
+                    <td class="actions-cell">
+                      <button class="action-icon-btn edit" (click)="openModal('family', member)" title="تعديل">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </button>
+                      <button class="action-icon-btn delete" (click)="deleteFamily(member.id)" title="حذف">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                          </path>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+              } @else {
+              <p class="empty-msg">لا يوجد أفراد أسرة مسجلين.</p>
+              }
+            </div>
+          </div>
+
+          <!-- Aid History -->
+          <div class="profile-section aid-section full-width">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <h3>تاريخ المساعدات</h3>
+              </div>
+              <button class="add-mini-btn" (click)="openModal('aid')">إضافة مساعدة +</button>
+            </div>
+            <div class="aid-timeline">
+              @if (caseProfile()?.aids?.length) {
+              @for (aid of caseProfile()?.aids; track aid.id) {
+              <div class="timeline-item">
+                <div class="timeline-date">{{ aid.date | date:'shortDate' }}</div>
+                <div class="timeline-content">
+                  <div class="aid-details">
+                    <div class="aid-header-line">
+                      <h4 class="aid-title">{{ aid.description }}</h4>
+                      <div class="aid-actions">
+                        <button class="aid-action-btn edit" (click)="openModal('aid', aid)" title="تعديل">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                          </svg>
+                        </button>
+                        <button class="aid-action-btn delete" (click)="deleteAid(aid.id)" title="حذف">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    @if (aid.notes) {
+                    <p class="aid-notes">{{ aid.notes }}</p>
+                    }
+                  </div>
+                  <div class="researcher-info" [title]="'تم التسجيل بواسطة: ' + aid.userName">
+                    <img [src]="getFullImageUrl(aid.profileImageUrl)" class="researcher-avatar" alt="Researcher">
+                    <span class="researcher-name">{{ aid.userName }}</span>
+                  </div>
+                </div>
+              </div>
+              }
+              } @else {
+              <p class="empty-msg">لا يوجد سجل مساعدات سابق.</p>
+              }
+            </div>
+          </div>
+
+          <!-- Gallery Section -->
+          <div class="profile-section gallery-section full-width">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <h3>المرفقات والصور ({{ caseProfile()?.images?.length }})</h3>
+              </div>
+            </div>
+            <div class="image-grid">
+              @for (img of caseProfile()?.images; track ($any(img).id || img)) {
+              <div class="image-item">
+                <img [src]="getFullImageUrl($any(img).imageUrl || img)" alt="Beneficiary Attachment">
+                <div class="image-actions">
+                  <button class="img-action-btn view" (click)="viewImage(getFullImageUrl($any(img).imageUrl || img))"
+                    title="عرض الحجم الأصلي">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                  @if ($any(img).id) {
+                  <button class="img-action-btn delete" (click)="deleteImage($any(img).id)" title="حذف الصورة">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                  }
+                </div>
+              </div>
+              }
+              @if (caseProfile()?.images?.length === 0) {
+              <p class="empty-msg">لا توجد صور مرفقة.</p>
+              }
+            </div>
+          </div>
+
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- Dynamic Modal Overlay -->
+  @if (activeModal()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          {{
+          activeModal() === 'family' ? (isEditing() ? 'تعديل بيانات فرد الأسرة' : 'إضافة فرد أسرة جديد') :
+          activeModal() === 'house' ? (isEditing() ? 'تعديل بيانات السكن' : 'إضافة بيانات السكن') :
+          activeModal() === 'income' ? (isEditing() ? 'تعديل مصدر الدخل' : 'إضافة مصدر دخل') :
+          activeModal() === 'spend' ? (isEditing() ? 'تعديل المصاريف' : 'إضافة مصاريف') :
+          activeModal() === 'phone' ? (isEditing() ? 'تعديل رقم الهاتف' : 'إضافة رقم هاتف') :
+          activeModal() === 'aid' ? (isEditing() ? 'تعديل بيانات المساعدة' : 'تسجيل مساعدة جديدة') : ''
+          }}
+        </h3>
+        <button (click)="closeModal()" class="close-x">&times;</button>
+      </div>
+
+      <form [formGroup]="modalForm" (ngSubmit)="submitModal()" class="modal-form">
+        <!-- Profile Form -->
+        @if (activeModal() === 'profile') {
+        <div class="form-grid">
+          <div class="form-group"><label>الاسم</label><input type="text" formControlName="name"></div>
+          <div class="form-group">
+            <label>الرقم القومي</label>
+            <div class="input-wrapper" [class.checking]="isFieldChecking() && activeModal() === 'profile'">
+              <input type="text" formControlName="ssnid" (blur)="onFieldBlur('ssn')">
+              @if (isFieldChecking() && activeModal() === 'profile') {
+              <div class="field-spinner"></div>
+              }
+            </div>
+            @if (fieldError() && activeModal() === 'profile') {
+            <span class="error-text">{{ fieldError() }}</span>
+            }
+          </div>
+          <div class="form-group full-width"><label>العنوان</label><input type="text" formControlName="address"></div>
+          <div class="form-group"><label>التعليم</label><input type="text" formControlName="education"></div>
+          <div class="form-group"><label>العمل</label><input type="text" formControlName="work"></div>
+          <div class="form-group">
+            <label>الحالة الاجتماعية</label>
+            <select formControlName="status">
+              <option value="أعزب">أعزب</option>
+              <option value="متزوج">متزوج</option>
+              <option value="مطلق">مطلق</option>
+              <option value="أرمل">أرمل</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>الفئة</label>
+            <select formControlName="category">
+              <option value="فقير">فقير</option>
+              <option value="يتيم">يتيم</option>
+              <option value="أرملة">أرملة</option>
+              <option value="معاق">معاق</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+          <div class="form-group full-width"><label>الاحتياج الأساسي</label><input type="text" formControlName="need">
+          </div>
+          <div class="form-group full-width"><label>ملاحظات إضافية</label><textarea formControlName="notes"></textarea>
+          </div>
+        </div>
+        }
+
+        <!-- Family Form -->
+        @if (activeModal() === 'family') {
+        <div class="form-grid">
+          <div class="form-group"><label>الاسم</label><input type="text" formControlName="name"></div>
+          <div class="form-group">
+            <label>الرقم القومي</label>
+            <div class="input-wrapper" [class.checking]="isFieldChecking() && activeModal() === 'family'">
+              <input type="text" formControlName="ssnid" (blur)="onFieldBlur('ssn')">
+              @if (isFieldChecking() && activeModal() === 'family') {
+              <div class="field-spinner"></div>
+              }
+            </div>
+            @if (fieldError() && activeModal() === 'family') {
+            <span class="error-text">{{ fieldError() }}</span>
+            }
+          </div>
+          <div class="form-group"><label>صلة القرابة</label><input type="text" formControlName="relation"></div>
+          <div class="form-group"><label>التعليم</label><input type="text" formControlName="education"></div>
+          <div class="form-group"><label>العمل</label><input type="text" formControlName="work"></div>
+          <div class="form-group">
+            <label>الحالة</label>
+            <select formControlName="status">
+              <option value="أعزب">أعزب</option>
+              <option value="متزوج">متزوج</option>
+              <option value="مطلق">مطلق</option>
+              <option value="أرمل">أرمل</option>
+            </select>
+          </div>
+          <div class="form-group full-width"><label>ملاحظات</label><textarea formControlName="notes"></textarea></div>
+        </div>
+        }
+
+        <!-- House Form -->
+        @if (activeModal() === 'house') {
+        <div class="form-grid">
+          <div class="form-group">
+            <label>نوع السكن</label>
+            <select formControlName="isRented">
+              <option [ngValue]="true">إيجار</option>
+              <option [ngValue]="false">تملك</option>
+            </select>
+          </div>
+          <div class="form-group"><label>قيمة الإيجار (إن وجد)</label><input type="number" formControlName="rentAmount">
+          </div>
+          <div class="form-group full-width"><label>ملاحظات</label><textarea formControlName="notes"></textarea></div>
+        </div>
+        }
+
+        <!-- Financial Form (Income/Spend) -->
+        @if (activeModal() === 'income' || activeModal() === 'spend') {
+        <div class="form-grid">
+          <div class="form-group"><label>القيمة المالية (جنية)</label><input type="number" formControlName="value">
+          </div>
+          <div class="form-group full-width"><label>ملاحظات / المصدر</label><textarea
+              formControlName="notes"></textarea></div>
+        </div>
+        }
+
+        <!-- Phone Form -->
+        @if (activeModal() === 'phone') {
+        <div class="form-group">
+          <label>رقم الهاتف</label>
+          <div class="input-wrapper" [class.checking]="isFieldChecking() && activeModal() === 'phone'">
+            <input type="text" formControlName="phoneNumber" placeholder="01xxxxxxxxx" (blur)="onFieldBlur('phone')">
+            @if (isFieldChecking() && activeModal() === 'phone') {
+            <div class="field-spinner"></div>
+            }
+          </div>
+          @if (fieldError() && activeModal() === 'phone') {
+          <span class="error-text">{{ fieldError() }}</span>
+          }
+        </div>
+        }
+
+        <!-- Aid Form -->
+        @if (activeModal() === 'aid') {
+        <div class="form-grid">
+          <div class="form-group full-width"><label>وصف المساعدة</label><input type="text"
+              formControlName="description"></div>
+          <div class="form-group full-width"><label>ملاحظات</label><textarea formControlName="notes"></textarea></div>
+        </div>
+        }
+
+        <div class="modal-footer-btn">
+          <button type="button" class="cancel-btn" (click)="closeModal()">إلغاء</button>
+          <button type="submit" class="save-btn" [disabled]="modalForm.invalid || isSubmitting()">
+            {{ isSubmitting() ? 'جاري الحفظ...' : (isEditing() ? 'تحديث البيانات' : 'حفظ البيانات') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  @if (selectedImage()) {
+  <div class="image-viewer-overlay" (click)="closeImageViewer()">
+    <div class="viewer-container" (click)="$event.stopPropagation()">
+      <button class="close-viewer" (click)="closeImageViewer()">&times;</button>
+      <img [src]="selectedImage()" alt="Original Size Attachment">
+    </div>
+  </div>
+  }
+</div>

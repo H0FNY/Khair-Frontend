@@ -1,0 +1,223 @@
+<div class="dashboard-layout" [class.sidebar-collapsed]="sidebarService.isCollapsed()">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    <app-navbar></app-navbar>
+
+    <div class="content-area">
+      <div class="donations-header"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px;">
+        <div class="header-text">
+          <h1>سجل التبرعات</h1>
+          <p>إجمالي التبرعات من حسابك: {{ totalCount() }}</p>
+        </div>
+        <button class="add-btn" (click)="openAddModal()"
+          style="display: flex; align-items: center; gap: 10px; padding: 12px 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>إضافة مساعدة جديدة</span>
+        </button>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar" style="background: white; border-radius: 16px; border: 1px solid #f1f5f9; margin-bottom: 20px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+        <div class="filter-bar-header" (click)="toggleFilter()"
+          style="display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; cursor: pointer; user-select: none;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            <span style="font-weight: 700; color: #334155; font-size: 15px;">تصفية النتائج</span>
+            @if (hasActiveFilters) {
+            <span style="background: #10b981; color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px;">فعّال</span>
+            }
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"
+            [style.transform]="isFilterOpen() ? 'rotate(180deg)' : ''" style="transition: transform 0.2s;">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+
+        @if (isFilterOpen()) {
+        <div class="filter-grid-4" style="padding: 0 20px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">اسم الحالة</label>
+            <input type="text" [(ngModel)]="filterCaseName" placeholder="ابحث باسم الحالة..."
+              style="width: 100%; padding: 9px 12px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-family: inherit; font-size: 14px; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">البيان / الملاحظات</label>
+            <input type="text" [(ngModel)]="filterDescription" placeholder="ابحث في البيان..."
+              style="width: 100%; padding: 9px 12px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-family: inherit; font-size: 14px; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">من تاريخ</label>
+            <input type="date" [(ngModel)]="filterDateFrom"
+              style="width: 100%; padding: 9px 12px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-family: inherit; font-size: 14px; box-sizing: border-box;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">إلى تاريخ</label>
+            <input type="date" [(ngModel)]="filterDateTo"
+              style="width: 100%; padding: 9px 12px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-family: inherit; font-size: 14px; box-sizing: border-box;" />
+          </div>
+          <div style="grid-column: 1 / -1; display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px;">
+            @if (hasActiveFilters) {
+            <button (click)="resetFilters()"
+              style="padding: 9px 20px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: white; font-weight: 700; color: #64748b; cursor: pointer; font-family: inherit; font-size: 14px;">
+              مسح الفلاتر
+            </button>
+            }
+            <button (click)="applyFilters()"
+              style="padding: 9px 24px; border-radius: 10px; border: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 14px; box-shadow: 0 4px 12px rgba(16,185,129,0.25);">
+              تطبيق الفلاتر
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+
+      <div class="cards-container">
+        @if (isLoading()) {
+        <div class="loading-overlay">
+          <div class="spinner"></div>
+          <span>جاري التحميل...</span>
+        </div>
+        }
+
+        <div class="cards-grid">
+          @for (aid of donations(); track aid.id) {
+          <div class="donation-card clickable-card" [routerLink]="['/beneficiaries', aid.caseEntityId]">
+            <div class="card-header">
+              <div class="user-profile">
+                <div class="avatar-circle" style="overflow: hidden;">
+                  @if (aid.profileImageUrl) {
+                  <img [src]="aid.profileImageUrl" alt="Profile"
+                    style="width: 100%; height: 100%; border-radius: inherit; object-fit: cover;" />
+                  } @else {
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  }
+                </div>
+                <div class="user-meta">
+                  <h3 class="user-name" style="color: #10b981; margin-bottom: 2px;">{{ aid.caseEntityName || 'تبرع مسجل'
+                    }}</h3>
+                  <span style="font-size: 12px; color: #64748b; font-weight: 600;">بواسطة: {{ aid.userName || 'غير
+                    معروف' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-content">
+              <div class="detail-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
+                  <path d="M14 3v5h5M16 13H8M16 17H8M10 9H8" />
+                </svg>
+                <span>البيان: {{ aid.description }}</span>
+              </div>
+              @if (aid.notes) {
+              <div class="detail-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>ملاحظات: {{ aid.notes }}</span>
+              </div>
+              }
+            </div>
+
+            <div class="card-footer">
+              <div class="date-info" style="display: flex; flex-direction: column; gap: 4px;">
+                <span class="date-added">تاريخ التبرع: {{ aid.date | date:'shortDate' }}</span>
+              </div>
+            </div>
+          </div>
+          }
+          @if (donations().length === 0 && !isLoading()) {
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z">
+              </path>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>لا يوجد تبرعات مسجلة حالياً</span>
+          </div>
+          }
+        </div>
+
+        <div class="pagination">
+          <div class="pagination-info">
+            عرض {{ donations().length }} من أصل {{ totalCount() }}
+          </div>
+          <div class="pagination-controls">
+            <button class="page-btn" [disabled]="currentPage() === 1" (click)="prevPage()">السابق</button>
+            <span class="page-num">صفحة {{ currentPage() }} من {{ totalPages() }}</span>
+            <button class="page-btn" [disabled]="currentPage() === totalPages() || totalPages() === 0"
+              (click)="nextPage()">التالي</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Aid Modal Details -->
+  @if (isAddModalOpen()) {
+  <div class="modal-overlay"
+    style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 999;">
+    <div class="modal-content"
+      style="background: white; border-radius: 24px; width: 90%; max-width: 500px; padding: 32px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); position: relative; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+      <button class="close-btn" (click)="closeAddModal()"
+        style="position: absolute; top: 24px; left: 24px; background: #f8fafc; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.2s;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="modal-header" style="margin-bottom: 24px;">
+        <h2 style="font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 8px;">تفاصيل المساعدة</h2>
+        <p style="color: #64748b; font-size: 14px;">أدخل تفاصيل المساعدة قبل الانتقال لاختيار المستفيدين.</p>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 8px;">البيان
+          <span style="color: #ef4444;">*</span></label>
+        <input type="text" [(ngModel)]="newAidDescription" placeholder="مثال: مساعدة مالية، طرود غذائية..."
+          style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 15px; transition: all 0.2s;" />
+      </div>
+
+      <div class="form-group" style="margin-bottom: 24px;">
+        <label style="display: block; font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 8px;">ملاحظات
+          إضافية (اختياري)</label>
+        <textarea [(ngModel)]="newAidNotes" placeholder="أي ملاحظات أو تفاصيل أخرى" rows="3"
+          style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 15px; resize: vertical; transition: all 0.2s;"></textarea>
+      </div>
+
+      <div class="modal-actions" style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button (click)="closeAddModal()"
+          style="padding: 12px 24px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; background: #f1f5f9; color: #64748b;">إلغاء</button>
+        <button (click)="proceedToSelectCases()" [disabled]="!newAidDescription.trim()"
+          style="padding: 12px 24px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; display: flex; align-items: center; gap: 8px;"
+          [style.opacity]="!newAidDescription.trim() ? '0.6' : '1'">
+          <span>التالي: اختيار الحالات</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+</div>

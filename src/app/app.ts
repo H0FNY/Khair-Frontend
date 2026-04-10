@@ -1,0 +1,14 @@
+import { Component, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { ToastComponent } from './shared/ui/toast/toast';
+import { ConfirmModalComponent } from './shared/ui/confirm-modal/confirm-modal';
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, ToastComponent, ConfirmModalComponent],
+  templateUrl: './app.html',
+  styleUrl: './app.css',
+})
+export class App {
+  protected readonly title = signal('khier-frontend');
+}

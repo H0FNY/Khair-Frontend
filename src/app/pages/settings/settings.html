@@ -1,0 +1,148 @@
+<div class="dashboard-layout" [class.sidebar-collapsed]="sidebarService.isCollapsed()">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    <app-navbar></app-navbar>
+
+    <div class="settings-container">
+      @if (isLoading()) {
+      <div class="loading-state">
+        <div class="loader"></div>
+        <p>جاري تحميل الإعدادات...</p>
+      </div>
+      } @else {
+      <header class="settings-header">
+        <div class="profile-summary">
+          <div class="avatar-wrapper" [class.uploading]="isSubmitting()">
+            <img [src]="user()?.profileImageUrl || 'assets/default-avatar.png'" alt="User Profile">
+            <label class="photo-upload-overlay" for="photo-input">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+              <span>تغيير الصورة</span>
+            </label>
+            <input type="file" id="photo-input" (change)="onPhotoSelected($event)" accept="image/*" hidden>
+          </div>
+          <div class="user-meta">
+            <h2>{{ user()?.name }}</h2>
+            <p>@{{ user()?.username }}</p>
+          </div>
+        </div>
+
+        <nav class="settings-tabs">
+          <button [class.active]="activeTab() === 'profile'" (click)="switchTab('profile')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            الملف الشخصي
+          </button>
+          <button [class.active]="activeTab() === 'security'" (click)="switchTab('security')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            الأمان
+          </button>
+          <button [class.active]="activeTab() === 'account'" (click)="switchTab('account')" class="danger-tab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            الحساب
+          </button>
+        </nav>
+      </header>
+
+      <main class="settings-content">
+        <!-- Profile Tab -->
+        @if (activeTab() === 'profile') {
+        <div class="tab-pane animate-fade">
+          <form [formGroup]="profileForm" (ngSubmit)="onProfileSubmit()" class="settings-card">
+            <h3>العلومات الشخصية</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>الاسم الكامل</label>
+                <input type="text" formControlName="name">
+              </div>
+              <div class="form-group">
+                <label>رقم الهاتف</label>
+                <div class="input-wrapper" [class.checking]="isPhoneChecking()">
+                  <input type="text" formControlName="phone" (blur)="onPhoneBlur()">
+                  @if (isPhoneChecking()) {
+                  <div class="field-spinner"></div>
+                  }
+                </div>
+                @if (phoneError()) {
+                <p class="error-text">{{ phoneError() }}</p>
+                }
+              </div>
+              <div class="form-group full-width">
+                <label>العنوان</label>
+                <input type="text" formControlName="address">
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="submit" class="save-btn" [disabled]="profileForm.invalid || isSubmitting()">
+                {{ isSubmitting() ? 'جاري الحفظ...' : 'حفظ التغييرات' }}
+              </button>
+            </div>
+          </form>
+        </div>
+        }
+
+        <!-- Security Tab -->
+        @if (activeTab() === 'security') {
+        <div class="tab-pane animate-fade">
+          <form [formGroup]="passwordForm" (ngSubmit)="onPasswordSubmit()" class="settings-card">
+            <h3>تغيير كلمة المرور</h3>
+            <div class="form-vertical">
+              <div class="form-group">
+                <label>كلمة المرور الحالية</label>
+                <input type="password" formControlName="currentPassword">
+              </div>
+              <div class="form-group">
+                <label>كلمة المرور الجديدة</label>
+                <input type="password" formControlName="newPassword">
+              </div>
+              <div class="form-group">
+                <label>تأكيد كلمة المرور الجديدة</label>
+                <input type="password" formControlName="confirmPassword">
+              </div>
+              @if (passwordForm.errors?.['mismatch'] && passwordForm.get('confirmPassword')?.touched) {
+              <p class="error-text">كلمات المرور غير متطابقة</p>
+              }
+            </div>
+            <div class="card-footer">
+              <button type="submit" class="save-btn" [disabled]="passwordForm.invalid || isSubmitting()">
+                {{ isSubmitting() ? 'جاري التغيير...' : 'تغيير كلمة المرور' }}
+              </button>
+            </div>
+          </form>
+        </div>
+        }
+
+        <!-- Account Tab -->
+        @if (activeTab() === 'account') {
+        <div class="tab-pane animate-fade">
+          <div class="settings-card danger-zone">
+            <h3>منطقة الخطر</h3>
+            <div class="danger-info">
+              <div class="text">
+                <strong>حذف الحساب</strong>
+                <p>سيؤدي حذف حسابك إلى إزالة كافة البيانات المرتبطة بك في النظام بشكل نهائي.</p>
+              </div>
+              <button (click)='onDeleteAccount()' class="delete-btn" [disabled]="isSubmitting()">
+                حذف الحساب نهائياً
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+      </main>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,132 @@
+<div class="dashboard-layout" [class.sidebar-collapsed]="sidebarService.isCollapsed()">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    <app-navbar></app-navbar>
+
+    <div class="content-area" style="padding-bottom: 100px;">
+      <div class="beneficiaries-header">
+        <div class="header-text">
+          <h1>اختيار المستفيدين للمساعدة</h1>
+          <p>أنت تقوم بإضافة المساعدة التالية: <strong style="color: #10b981;">{{ aidDescription }}</strong></p>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-bar">
+        <div class="filter-grid">
+          <div class="filter-group">
+            <label>الاسم</label>
+            <input type="text" formControlName="name" placeholder="بحث بالاسم...">
+          </div>
+          <div class="filter-group">
+            <label>الرقم القومي</label>
+            <input type="text" formControlName="ssn" placeholder="14 رقم...">
+          </div>
+          <div class="filter-group">
+            <label>التصنيف</label>
+            <select formControlName="category">
+              <option value="">الكل</option>
+              @for (cat of categories; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>رقم الهاتف</label>
+            <input type="text" formControlName="phone" placeholder="01xxxxxxxx">
+          </div>
+          <div class="filter-group">
+            <label>العنوان</label>
+            <input type="text" formControlName="address" placeholder="المنطقة...">
+          </div>
+          <div class="filter-actions">
+            <button type="submit" class="btn-search">بحث</button>
+            <button type="button" class="btn-reset" (click)="resetFilters()">إعادة ضبط</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="cards-container">
+        @if (isLoading()) {
+        <div class="loading-overlay">
+          <div class="spinner"></div>
+          <span>جاري التحميل...</span>
+        </div>
+        }
+
+        <!-- Select All on Page -->
+        <div class="select-all-container" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding: 12px 20px; background: white; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <input type="checkbox" id="selectAllPage" [checked]="allOnPageSelected" (change)="toggleAllOnPage($event)" style="width: 20px; height: 20px; cursor: pointer;">
+            <label for="selectAllPage" style="font-size: 15px; font-weight: 700; color: #334155; cursor: pointer;">تحديد الكل في هذه الصفحة</label>
+        </div>
+
+        <div class="cards-grid">
+          @for (item of beneficiaries(); track item.id) {
+          <div class="beneficiary-card" [class.selected]="isCaseSelected(item.id)" (click)="toggleCaseSelection(item.id)">
+            <div class="card-selection-overlay" *ngIf="isCaseSelected(item.id)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            
+            <div class="card-header">
+              <div class="user-profile">
+                <input type="checkbox" [checked]="isCaseSelected(item.id)" (change)="toggleCaseSelection(item.id); $event.stopPropagation()" style="width: 20px; height: 20px; cursor: pointer; pointer-events: none;">
+                <div class="avatar-circle">{{ item.id }}</div>
+                <div class="user-meta">
+                  <h3 class="user-name">{{ item.name }}</h3>
+                </div>
+              </div>
+              <div class="status-badges">
+                <span class="badge category-badge-alt">{{ item.category }}</span>
+              </div>
+            </div>
+
+            <div class="card-content">
+              <div class="detail-item">
+                <span>{{ item.address }}</span>
+              </div>
+              <div class="detail-item">
+                <span>عدد الأفراد: {{ item.familyCount }}</span>
+              </div>
+            </div>
+          </div>
+          }
+          @if (beneficiaries().length === 0 && !isLoading()) {
+          <div class="empty-state">
+            <span>لا يوجد مستفيدون مسجلون بعد.</span>
+          </div>
+          }
+        </div>
+
+        <div class="pagination">
+          <div class="pagination-info">
+            عرض {{ beneficiaries().length }} من أصل {{ totalCount() }}
+          </div>
+          <div class="pagination-controls">
+            <button class="page-btn" [disabled]="currentPage() === 1" (click)="prevPage()">السابق</button>
+            <span class="page-num">صفحة {{ currentPage() }} من {{ totalPages() }}</span>
+            <button class="page-btn" [disabled]="currentPage() === totalPages() || totalPages() === 0" (click)="nextPage()">التالي</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Bottom Bar -->
+  <div class="bottom-action-bar" [class.visible]="selectedCaseIds.size > 0">
+      <div class="bar-content">
+          <div class="selection-info">
+              <span class="badge bg-green">{{ selectedCaseIds.size }}</span> حالة محددة
+          </div>
+          <div class="bar-actions">
+              <button class="btn-cancel" routerLink="/donations">إلغاء</button>
+              <button class="btn-confirm" (click)="submitBulkAid()" [disabled]="isSubmitting()">
+                  <span *ngIf="!isSubmitting()">تأكيد إضافة المساعدة</span>
+                  <span *ngIf="isSubmitting()">جاري الإضافة...</span>
+              </button>
+          </div>
+      </div>
+  </div>
+</div>
