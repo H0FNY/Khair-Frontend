@@ -24,6 +24,7 @@ export class Beneficiaries implements OnInit {
   totalCount = signal(0);
   isLoading = signal(false);
   isAddModalOpen = signal(false);
+  isFilterOpen = signal(false);
 
   filterForm: FormGroup;
   categories = ['فقير', 'يتيم', 'أرملة', 'معاق', 'أخرى'];
@@ -40,6 +41,15 @@ export class Beneficiaries implements OnInit {
       category: [''],
       address: ['']
     });
+  }
+
+  get hasActiveFilters(): boolean {
+    const v = this.filterForm.value;
+    return !!(v.name || v.ssn || v.phone || v.category || v.address);
+  }
+
+  toggleFilter() {
+    this.isFilterOpen.update(v => !v);
   }
 
   ngOnInit(): void {
@@ -107,5 +117,11 @@ export class Beneficiaries implements OnInit {
     if (this.currentPage() > 1) {
       this.loadBeneficiaries(this.currentPage() - 1);
     }
+  }
+
+  getFullImageUrl(url: string | undefined | null): string {
+    if (!url) return 'assets/default-avatar.png';
+    if (url.startsWith('http')) return url;
+    return url;
   }
 }

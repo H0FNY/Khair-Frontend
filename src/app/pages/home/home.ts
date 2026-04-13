@@ -65,13 +65,19 @@ export class Home implements OnInit {
 
       this.caseService.getCountAidsByUser(userId).subscribe({
         next: (count) => {
-            localStorage.setItem(`aidsCount_${userId}`, count.toString());
-            this.stats[1].value = new Intl.NumberFormat('ar-EG').format(count);
+          localStorage.setItem(`aidsCount_${userId}`, count.toString());
+          this.stats[1].value = new Intl.NumberFormat('ar-EG').format(count);
         },
         error: (err) => {
-            console.error('Error fetching aids count:', err);
+          console.error('Error fetching aids count:', err);
         }
       });
     }
+  }
+
+  getFullImageUrl(url: string | undefined | null): string {
+    if (!url) return 'assets/default-avatar.png';
+    if (url.startsWith('http')) return url;
+    return url;
   }
 }

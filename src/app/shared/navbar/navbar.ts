@@ -16,8 +16,7 @@ export class Navbar {
   }
 
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.clear();
     this.router.navigate(['/login']);
   }
 }

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { UserProfileDTO, UserUpdateDTO, PasswordChangeDTO } from '../models/user.model';
+import { UserProfileDTO, UserUpdateDTO, PasswordChangeDTO, UserRegisterDTO, AuthResponseDTO } from '../models/user.model';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,31 @@ import { UserProfileDTO, UserUpdateDTO, PasswordChangeDTO } from '../models/user
 export class UserService {
   private apiUrl = 'https://khair.runasp.net/api/User';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
+
+  logout() {
+    localStorage.clear();
+    this.router.navigate(['/login']);
+  }
+
+  isTokenExpired(): boolean {
+    const expires = localStorage.getItem('tokenExpires');
+    if (!expires) return true;
+
+    const expirationDate = new Date(expires);
+    return expirationDate <= new Date();
+  }
+
+  login(username: string, password: string): Observable<AuthResponseDTO> {
+    const formData = new FormData();
+    formData.append('Username', username);
+    formData.append('Password', password);
+    return this.http.post<AuthResponseDTO>(`${this.apiUrl}/Login`, formData);
+  }
+
+  register(dto: UserRegisterDTO): Observable<string> {
+    return this.http.post(`${this.apiUrl}/Register`, dto, { responseType: 'text' });
+  }
 
   getProfile(id: string): Observable<UserProfileDTO> {
     return this.http.get<UserProfileDTO>(`${this.apiUrl}/profile/${id}`);

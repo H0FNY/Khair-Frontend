@@ -9,6 +9,9 @@ export interface CaseEntityCardDTO {
   familyCount: number;
   createdAt: Date | string;
   updatedAt?: Date | string;
+  userId: string;
+  userName: string;
+  profileImageUrl?: string;
 }
 
 export interface CaseResponse {
@@ -59,16 +62,19 @@ export interface CaseEntityProfileDTO {
   category: string;
   createdAt: Date | string;
   updatedAt?: Date | string;
+  userId: string;
+  userName: string;
+  profileImageUrl?: string;
   houses: HouseCardDTO;
   families: FamilyCardDTO[];
   incomes: IncomeCardDTO[];
   phones: PhoneCardDTO[];
   aids: AidCardDTO[];
-  images: ImageCardDTO[];
+  images: ImageDTO[];
   spends: SpendCardDTO[];
 }
 
-export interface ImageCardDTO {
+export interface ImageDTO {
   id: number;
   imageUrl: string;
 }

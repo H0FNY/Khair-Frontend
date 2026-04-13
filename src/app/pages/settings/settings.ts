@@ -96,7 +96,9 @@ export class Settings implements OnInit {
 
     const dto: UserUpdateDTO = {
       id: this.user()!.id,
-      ...this.profileForm.value
+      name: this.profileForm.value.name,
+      phone: this.profileForm.value.phone,
+      address: this.profileForm.value.address
     };
 
     this.userService.updateProfile(dto).subscribe({

@@ -9,4 +9,8 @@ export class SidebarService {
   toggle() {
     this.isCollapsed.set(!this.isCollapsed());
   }
+
+  close() {
+    this.isCollapsed.set(true);
+  }
 }

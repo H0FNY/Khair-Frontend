@@ -183,6 +183,36 @@
   font-weight: 500;
 }
 
+/* ===== Logout Button ===== */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.sidebar.collapsed .logout-btn {
+  justify-content: center;
+  padding: 10px 8px;
+}
+
 /* ===== Collapsed state adjustments ===== */
 .sidebar.collapsed .sidebar-header {
   justify-content: center;

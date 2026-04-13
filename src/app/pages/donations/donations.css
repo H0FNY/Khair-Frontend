@@ -26,6 +26,138 @@
   max-width: 100%;
 }
 
+/* ===== Collapsible Filter Bar ===== */
+.collapsible-filter {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #f1f5f9;
+  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.filter-bar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.filter-bar-header:hover {
+  background: #fcfdfe;
+}
+
+.header-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-title {
+  font-weight: 700;
+  color: #334155;
+  font-size: 15px;
+}
+
+.active-badge {
+  background: #10b981;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.filter-content {
+  border-top: 1px solid #f1f5f9;
+  padding: 16px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.filter-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) auto;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  /* Align buttons with inputs */
+  padding-bottom: 2px;
+  min-width: fit-content;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  margin-right: 4px;
+}
+
+.filter-group input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filter-group input:focus {
+  outline: none;
+  border-color: #10b981;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.btn-clear {
+  padding: 9px 20px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-apply {
+  padding: 9px 24px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  transition: all 0.2s;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .donations-header {
   display: flex;
   align-items: center;
@@ -259,10 +391,17 @@
   }
 }
 
-@media (max-width: 1024px) {
-  /* Filter grid: 2 columns on tablet */
-  .filter-grid-4 {
-    grid-template-columns: 1fr 1fr !important;
+@media (max-width: 1200px) {
+  .filter-grid-layout {
+    grid-template-columns: repeat(3, 1fr) auto !important;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 992px) {
+  /* Filter grid: 2 columns on small tablet */
+  .filter-grid-layout {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
@@ -295,8 +434,16 @@
   }
 
   /* Filter bar: single column */
-  .filter-grid-4 {
+  .filter-grid-layout {
     grid-template-columns: 1fr !important;
+  }
+
+  .filter-actions {
+    flex-direction: column;
+  }
+
+  .filter-actions button {
+    width: 100%;
   }
 
   /* Cards */

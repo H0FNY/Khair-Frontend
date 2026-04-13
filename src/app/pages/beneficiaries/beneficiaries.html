@@ -21,50 +21,61 @@
       </div>
 
       <!-- Filter Bar -->
-      <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-bar">
-        <div class="filter-grid">
-          <div class="filter-group">
-            <label>الاسم</label>
-            <input type="text" formControlName="name" placeholder="بحث بالاسم...">
+      <div class="filter-bar collapsible-filter">
+        <div class="filter-bar-header" (click)="toggleFilter()">
+          <div class="header-main">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            <span class="header-title">تصفية النتائج</span>
+            @if (hasActiveFilters) {
+            <span class="active-badge">فعّال</span>
+            }
           </div>
-          <div class="filter-group">
-            <label>الرقم القومي</label>
-            <input type="text" formControlName="ssn" placeholder="14 رقم...">
-          </div>
-          <div class="filter-group">
-            <label>التصنيف</label>
-            <select formControlName="category">
-              <option value="">الكل</option>
-              @for (cat of categories; track cat) {
-              <option [value]="cat">{{ cat }}</option>
-              }
-            </select>
-          </div>
-          <div class="filter-group">
-            <label>رقم الهاتف</label>
-            <input type="text" formControlName="phone" placeholder="01xxxxxxxx">
-          </div>
-          <div class="filter-group">
-            <label>العنوان</label>
-            <input type="text" formControlName="address" placeholder="المنطقة...">
-          </div>
-          <div class="filter-actions">
-            <button type="submit" class="btn-search">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              بحث
-            </button>
-            <button type="button" class="btn-reset" (click)="resetFilters()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                <polyline points="3 3 3 8 8 8" />
-              </svg>
-            </button>
-          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"
+            [style.transform]="isFilterOpen() ? 'rotate(180deg)' : ''" style="transition: transform 0.2s;">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
         </div>
-      </form>
+
+        <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-content" *ngIf="isFilterOpen()">
+          <div class="filter-grid-layout">
+            <div class="filter-group">
+              <label>الاسم</label>
+              <input type="text" formControlName="name" placeholder="بحث بالاسم...">
+            </div>
+            <div class="filter-group">
+              <label>الرقم القومي</label>
+              <input type="text" formControlName="ssn" placeholder="14 رقم...">
+            </div>
+            <div class="filter-group">
+              <label>التصنيف</label>
+              <select formControlName="category">
+                <option value="">الكل</option>
+                @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+                }
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>رقم الهاتف</label>
+              <input type="text" formControlName="phone" placeholder="01xxxxxxxx">
+            </div>
+            <div class="filter-group">
+                <label>العنوان</label>
+                <input type="text" formControlName="address" placeholder="المنطقة...">
+            </div>
+            <div class="filter-actions">
+              <button type="button" class="btn-clear" (click)="resetFilters()" *ngIf="hasActiveFilters">
+                مسح
+              </button>
+              <button type="submit" class="btn-apply">
+                تطبيق
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
 
       <div class="cards-container">
         @if (isLoading()) {
@@ -79,10 +90,20 @@
           <div class="beneficiary-card">
             <div class="card-header">
               <div class="user-profile">
-                <div class="avatar-circle">{{ item.id }}</div>
+                <div class="avatar-circle">
+                  @if (item.profileImageUrl) {
+                    <img [src]="getFullImageUrl(item.profileImageUrl)" alt="Beneficiary">
+                  } @else {
+                    {{ item.id }}
+                  }
+                </div>
                 <div class="user-meta">
                   <h3 class="user-name" [routerLink]="['/beneficiaries', item.id]"
                     style="cursor: pointer; color: #10b981;">{{ item.name }}</h3>
+                  <div style="display: flex; flex-direction: column; gap: 2px;">
+                    <span class="id-tag">#{{ item.id }}</span>
+                    <span class="researcher-name">بواسطة: {{ item.userName }}</span>
+                  </div>
                 </div>
               </div>
               <div class="status-badges">

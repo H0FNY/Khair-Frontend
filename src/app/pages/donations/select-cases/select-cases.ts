@@ -23,13 +23,14 @@ export class SelectCases implements OnInit {
   totalCount = signal(0);
   isLoading = signal(false);
   isSubmitting = signal(false);
+  isFilterOpen = signal(false);
 
   // State collected from the previous page
   aidDescription: string = '';
   aidNotes: string = '';
 
   selectedCaseIds = new Set<number>();
-  
+
   filterForm: FormGroup;
   categories = ['فقير', 'يتيم', 'أرملة', 'معاق', 'أخرى'];
 
@@ -62,6 +63,15 @@ export class SelectCases implements OnInit {
         this.router.navigate(['/donations']);
       }
     }
+  }
+
+  get hasActiveFilters(): boolean {
+    const v = this.filterForm.value;
+    return !!(v.name || v.ssn || v.phone || v.category || v.address);
+  }
+
+  toggleFilter() {
+    this.isFilterOpen.update(v => !v);
   }
 
   ngOnInit(): void {
@@ -174,5 +184,11 @@ export class SelectCases implements OnInit {
         // You might want to show a toast message here
       }
     });
+  }
+
+  getFullImageUrl(url: string | undefined | null): string {
+    if (!url) return 'assets/default-avatar.png';
+    if (url.startsWith('http')) return url;
+    return url;
   }
 }

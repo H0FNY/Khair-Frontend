@@ -6,6 +6,7 @@
 
 .main-content {
   flex: 1;
+  margin-right: 260px;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -13,7 +14,7 @@
 }
 
 .dashboard-layout.sidebar-collapsed .main-content {
-  margin-right: 80px;
+  margin-right: 78px;
 }
 
 .settings-container {
@@ -291,10 +292,100 @@
   .main-content {
     margin-right: 0 !important;
   }
+  
+  .settings-container {
+    margin: 15px auto;
+    padding: 0 16px;
+  }
+  
+  .settings-header, .settings-card {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
 }
 
 @media (max-width: 640px) {
-  .form-grid { grid-template-columns: 1fr; }
-  .danger-info { flex-direction: column; text-align: center; }
-  .settings-tabs { flex-wrap: wrap; }
+  .profile-summary {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .avatar-wrapper {
+    width: 86px;
+    height: 86px;
+    border-radius: 24px;
+  }
+
+  .user-meta h2 {
+    font-size: 20px;
+  }
+
+  .settings-tabs {
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .settings-tabs button {
+    justify-content: flex-start;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .settings-card {
+    padding: 20px 16px;
+  }
+
+  .settings-card h3 {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-vertical {
+    max-width: 100%;
+  }
+
+  .card-footer {
+    margin-top: 24px;
+    padding-top: 20px;
+  }
+
+  .save-btn {
+    width: 100%;
+    padding: 14px;
+  }
+
+  .danger-info {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .delete-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-header, .settings-card {
+    padding: 20px 15px;
+    border-radius: 16px;
+  }
+  
+  .avatar-wrapper {
+    width: 72px;
+    height: 72px;
+  }
+  
+  .user-meta h2 {
+    font-size: 18px;
+  }
 }

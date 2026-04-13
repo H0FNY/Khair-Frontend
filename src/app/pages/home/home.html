@@ -86,9 +86,19 @@
                 <div class="beneficiary-card">
                     <div class="card-header">
                         <div class="user-profile">
-                            <div class="avatar-circle">{{ item.id}}</div>
+                            <div class="avatar-circle">
+                                @if (item.profileImageUrl) {
+                                  <img [src]="getFullImageUrl(item.profileImageUrl)" alt="Beneficiary">
+                                } @else {
+                                  {{ item.id }}
+                                }
+                            </div>
                             <div class="user-meta">
                                 <h3 class="user-name" [routerLink]="['/beneficiaries', item.id]" style="cursor: pointer; color: #10b981;">{{ item.name }}</h3>
+                                <div style="display: flex; flex-direction: column; gap: 1px;">
+                                    <span class="id-tag">#{{ item.id }}</span>
+                                    <span class="researcher-name">بواسطة: {{ item.userName }}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="status-badges">

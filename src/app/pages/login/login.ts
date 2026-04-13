@@ -1,12 +1,13 @@
 import { Component, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -16,7 +17,10 @@ export class Login {
   isLoading = signal(false);
   errorMessage = signal('');
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(
+    private userService: UserService,
+    private router: Router
+  ) { }
 
   onLogin() {
     if (!this.username || !this.password) {
@@ -27,22 +31,24 @@ export class Login {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    const apiUrl = `https://khair.runasp.net/api/User/Login?Username=${encodeURIComponent(this.username)}&Password=${encodeURIComponent(this.password)}`;
-
-    this.http.get<any>(apiUrl).subscribe({
-      next: (userId) => {
+    this.userService.login(this.username, this.password).subscribe({
+      next: (response) => {
         this.isLoading.set(false);
-        // Store user ID or simple session flag
-        localStorage.setItem('userId', userId.toString());
+        // Store user data and token
+        localStorage.setItem('userId', response.userId);
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('tokenExpires', response.expires);
         localStorage.setItem('isAuthenticated', 'true');
-        
-        // Navigate to home/dashboard
+
+        // Navigate to home
         this.router.navigate(['/home']);
       },
       error: (err) => {
         this.isLoading.set(false);
+        console.error('Login error:', err);
         if (err.status === 404 || err.status === 401 || err.status === 400) {
-          this.errorMessage.set('اسم المستخدم أو كلمة المرور غير صحيحة');
+          const errorMsg = typeof err.error === 'string' ? err.error : 'اسم المستخدم أو كلمة المرور غير صحيحة';
+          this.errorMessage.set(errorMsg);
         } else if (err.status === 0) {
           this.errorMessage.set('تعذر الاتصال بالخادم. يرجى المحاولة لاحقاً');
         } else {

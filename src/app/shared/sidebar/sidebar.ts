@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SidebarService } from '../../core/services/sidebar.service';
 
@@ -10,7 +10,7 @@ import { SidebarService } from '../../core/services/sidebar.service';
   styleUrl: './sidebar.css',
 })
 export class Sidebar {
-  constructor(public sidebarService: SidebarService) { }
+  constructor(public sidebarService: SidebarService, private router: Router) { }
 
   menuItems = [
     { icon: 'home', label: 'الرئيسية', route: '/home' },
@@ -22,5 +22,17 @@ export class Sidebar {
 
   toggleSidebar() {
     this.sidebarService.toggle();
+  }
+
+  onItemClick() {
+    if (window.innerWidth <= 768) {
+      this.sidebarService.close();
+    }
+  }
+
+  logout() {
+    console.log('logout');
+    localStorage.clear();
+    this.router.navigate(['/login']);
   }
 }
