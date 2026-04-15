@@ -617,7 +617,9 @@
     border-top: 1.5px dashed #e2e8f0;
   }
   
-  .form-grid { grid-template-columns: 1fr; }
+  .profile-grid { grid-template-columns: 1fr !important; }
+  .financial-cards { grid-template-columns: 1fr !important; }
+  .financial-tables-container { grid-template-columns: 1fr !important; }
 
   .mini-data-table thead { display: none; }
   .mini-data-table tr {
@@ -665,6 +667,111 @@
 
   .main-content {
     margin-right: 0 !important;
+  }
+
+  /* Modal Mobile UI Overhaul */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end; /* Slide up from bottom on mobile */
+    overflow: hidden; /* Prevent background scroll */
+  }
+
+  .modal-container {
+    width: 100%;
+    max-width: none;
+    height: 94vh; /* Slightly taller for more space */
+    border-radius: 28px 28px 0 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    background: #fff;
+    position: relative;
+  }
+
+  .modal-header {
+    padding: 24px 20px 16px;
+    flex-shrink: 0;
+    background: white;
+    border-bottom: 1px solid #f1f5f9;
+    z-index: 20;
+    text-align: center;
+  }
+
+  .modal-header h3 {
+    width: 100%;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .close-x {
+    position: absolute;
+    top: 20px;
+    left: 20px; /* Positioned left for RTL standard */
+  }
+
+  .modal-form {
+    padding: 24px 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    -webkit-overflow-scrolling: touch; /* Smooth iOS scroll */
+  }
+
+  .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .form-group input, 
+  .form-group select, 
+  .form-group textarea {
+    font-size: 16px;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+  }
+
+  .modal-footer-btn {
+    padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 20px));
+    background: white;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
+    border-top: 1px solid #f1f5f9;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 20;
+  }
+
+  .modal-footer-btn button {
+    width: 100%;
+    margin: 0;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 800;
+    border-radius: 14px;
+  }
+
+  .save-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  }
+
+  .cancel-btn {
+    background: #f1f5f9;
+    color: #64748b;
+  }
+
+  @keyframes modalSlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
   }
 }
 
