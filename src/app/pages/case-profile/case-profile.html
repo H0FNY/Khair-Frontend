@@ -33,33 +33,24 @@
               }
             </div>
             <div class="profile-title">
-              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-                <h1 style="margin: 0;">{{ caseProfile()?.name }}</h1>
+              <div class="profile-name-row">
+                <h1>{{ caseProfile()?.name }}</h1>
                 <span class="id-tag">#{{ caseProfile()?.id }}</span>
               </div>
               <div class="meta-tags">
                 <span class="badge category-badge-alt">{{ caseProfile()?.category }}</span>
                 <span class="badge status-badge-alt">{{ caseProfile()?.status }}</span>
-                <span class="badge" style="background: #f3f4f6; color: #4b5563; font-weight: 500; display: flex; align-items: center;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 4px;">
+                <span class="badge researcher-badge-alt">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
-                  الباحث: {{ caseProfile()?.userName }}
+                  <span>الباحث: {{ caseProfile()?.userName }}</span>
                 </span>
               </div>
             </div>
           </div>
           <div class="header-actions">
-            <label class="upload-btn">
-              <input type="file" (change)="handleFileUpload($event)" multiple accept="image/*" hidden>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
-              رفع صور
-            </label>
             <button class="edit-profile-btn" (click)="openModal('profile', caseProfile())">
               تعديل البيانات
             </button>
@@ -268,16 +259,16 @@
                 <table class="mini-data-table">
                   <thead>
                     <tr>
-                      <th>القيمة</th>
-                      <th>المصدر / ملاحظات</th>
+                      <th data-label="القيمة">القيمة</th>
+                      <th data-label="المصدر / ملاحظات">المصدر / ملاحظات</th>
                       <th class="actions-col">إجراءات</th>
                     </tr>
                   </thead>
                   <tbody>
                     @for (inc of caseProfile()?.incomes; track inc.id) {
                     <tr>
-                      <td class="income-text">+ {{ inc.value }} جنية</td>
-                      <td>{{ inc.notes || '---' }}</td>
+                      <td data-label="القيمة" class="income-text">+ {{ inc.value }} جنية</td>
+                      <td data-label="الملاحظات">{{ inc.notes || '---' }}</td>
                       <td class="actions-cell">
                         <button class="action-icon-btn edit" (click)="openModal('income', inc)" title="تعديل">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -310,16 +301,16 @@
                 <table class="mini-data-table">
                   <thead>
                     <tr>
-                      <th>القيمة</th>
-                      <th>المناسبة / ملاحظات</th>
+                      <th data-label="القيمة">القيمة</th>
+                      <th data-label="المناسبة / ملاحظات">المناسبة / ملاحظات</th>
                       <th class="actions-col">إجراءات</th>
                     </tr>
                   </thead>
                   <tbody>
                     @for (spd of caseProfile()?.spends; track spd.id) {
                     <tr>
-                      <td class="spend-text">- {{ spd.value }} جنية</td>
-                      <td>{{ spd.notes || '---' }}</td>
+                      <td data-label="القيمة" class="spend-text">- {{ spd.value }} جنية</td>
+                      <td data-label="الملاحظات">{{ spd.notes || '---' }}</td>
                       <td class="actions-cell">
                         <button class="action-icon-btn edit" (click)="openModal('spend', spd)" title="تعديل">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -379,12 +370,12 @@
                 <tbody>
                   @for (member of caseProfile()?.families; track member.id) {
                   <tr>
-                    <td>{{ member.name }}</td>
-                    <td><span class="relation-badge">{{ member.relation }}</span></td>
-                    <td>{{ member.ssnid }}</td>
-                    <td>{{ member.education }}</td>
-                    <td>{{ member.work }}</td>
-                    <td>{{ member.status }}</td>
+                    <td data-label="الاسم">{{ member.name }}</td>
+                    <td data-label="الصلة"><span class="relation-badge">{{ member.relation }}</span></td>
+                    <td data-label="الرقم القومي">{{ member.ssnid }}</td>
+                    <td data-label="التعليم">{{ member.education }}</td>
+                    <td data-label="العمل">{{ member.work }}</td>
+                    <td data-label="الحالة">{{ member.status }}</td>
                     <td class="actions-cell">
                       <button class="action-icon-btn edit" (click)="openModal('family', member)" title="تعديل">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -479,6 +470,15 @@
                 </svg>
                 <h3>المرفقات والصور ({{ caseProfile()?.images?.length }})</h3>
               </div>
+              <label class="upload-btn-mini">
+                <input type="file" (change)="handleFileUpload($event)" multiple accept="image/*" hidden>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                رفع صور
+              </label>
             </div>
             <div class="image-grid">
               @for (img of caseProfile()?.images; track ($any(img).id || img)) {

@@ -16,6 +16,7 @@ export class Login {
   password = '';
   isLoading = signal(false);
   errorMessage = signal('');
+  showPassword = signal(false);
 
   constructor(
     private userService: UserService,

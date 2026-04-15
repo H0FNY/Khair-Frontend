@@ -29,24 +29,24 @@
     gap: 12px;
 }
 
-.upload-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    background: #f0fdf4;
-    color: #16a34a;
-    border: 1px solid #bbf7d0;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
+.upload-btn-mini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.upload-btn:hover {
-    background: #16a34a;
-    color: white;
+.upload-btn-mini:hover {
+  background: #16a34a;
+  color: white;
 }
 
 .edit-profile-btn {
@@ -375,10 +375,11 @@
   height: 100%;
   object-fit: cover;
 }
-.profile-title h1 { font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
-.meta-tags { display: flex; gap: 12px; align-items: center; }
+.profile-title h1 { font-size: 28px; font-weight: 800; color: #1e293b; margin: 0; }
+.profile-name-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.meta-tags { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .id-tag {
-  font-size: 13px;
+  font-size: 14px;
   color: #64748b;
   font-weight: 700;
   background: #f1f5f9;
@@ -388,9 +389,11 @@
   display: inline-flex;
   align-items: center;
 }
-.badge { padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+.badge { padding: 6px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 .category-badge-alt { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
 .status-badge-alt { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
+.researcher-badge-alt { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+.researcher-badge-alt svg { color: #94a3b8; }
 .profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 .profile-section { background: white; padding: 24px; border-radius: 20px; border: 1px solid #f1f5f9; }
 .section-header h3 { font-size: 16px; font-weight: 800; }
@@ -476,18 +479,182 @@
   .content-area {
     padding: 16px;
   }
+  
+  .profile-header-card { 
+    flex-direction: column; 
+    gap: 24px; 
+    align-items: center; 
+    text-align: center;
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
 
-  .profile-header-card { flex-direction: column; gap: 20px; align-items: stretch; }
-  .header-actions { flex-direction: column; width: 100%; }
-  .header-actions button, .header-actions .upload-btn { justify-content: center; text-align: center; }
+  .profile-main-info { 
+    flex-direction: column; 
+    gap: 16px; 
+    width: 100%;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    font-size: 40px;
+    margin: 0 auto;
+    border-width: 5px;
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.15);
+  }
+
+  .profile-name-row {
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .profile-title h1 {
+    font-size: 24px;
+  }
+
+  .meta-tags {
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .badge {
+    padding: 8px 16px;
+    font-size: 13px;
+    width: fit-content;
+  }
+
+  .researcher-badge-alt {
+    width: 100%;
+    justify-content: center;
+    background: #f1f5f9;
+    padding: 10px;
+  }
+
+  .header-actions { 
+    flex-direction: column; 
+    width: 100%; 
+    gap: 12px;
+    margin-top: 8px;
+  }
+  
+  .header-actions button, .upload-btn-mini { 
+    width: 100%;
+    justify-content: center; 
+    text-align: center; 
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+
+  .edit-profile-btn {
+    border: 1.5px solid #e2e8f0;
+    color: #334155;
+  }
+
+  .delete-case-btn {
+    background: #fff;
+    border: 1.5px solid #fecaca;
+  }
 
   .data-table thead { display: none; }
-  .data-table tr { display: flex; flex-direction: column; gap: 8px; padding: 16px 0; border-bottom: 1px solid #f1f5f9; }
+  .data-table tr { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    padding: 20px; 
+    border-bottom: 8px solid #f8fafc; 
+    background: #ffffff;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  }
+  
+  .data-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+    text-align: left; /* Values left-aligned */
+  }
+
+  .data-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #64748b;
+    font-size: 12px;
+  }
+
+  .data-table td:last-child {
+    border-bottom: none;
+    margin-top: 8px;
+    justify-content: center;
+  }
+
+  .data-table td[data-label="الاسم"] {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1e293b;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+  }
+
+  .data-table td[data-label="الاسم"]::before {
+    display: none; /* Hide label for Name to make it a header */
+  }
+
+  .relation-badge {
+    margin: 0;
+  }
+
+  .actions-cell {
+    width: 100%;
+    padding-top: 12px !important;
+    border-top: 1.5px dashed #e2e8f0;
+  }
   
   .form-grid { grid-template-columns: 1fr; }
 
-  .f-table-half { overflow-x: auto; }
-  .mini-data-table { min-width: 100%; }
+  .mini-data-table thead { display: none; }
+  .mini-data-table tr {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: white;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+
+  .mini-data-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #f8fafc;
+    font-size: 13px;
+  }
+
+  .mini-data-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #64748b;
+    font-size: 11px;
+  }
+
+  .mini-data-table td:last-child {
+    border-bottom: none;
+    justify-content: center;
+    padding-top: 10px;
+    margin-top: 4px;
+    border-top: 1px dashed #e2e8f0;
+  }
 
   .timeline-item { flex-direction: column; gap: 10px; }
   .timeline-item::before { display: none; }
